@@ -4,6 +4,7 @@ signal hit
 
 
 @export var speed = 400 #how fast the player will move (pixels/sec).
+@export var explode_scene: PackedScene
 var screen_size #size of the game window.
 var player_size
 
@@ -43,10 +44,14 @@ func _process(delta):
 
 
 func _on_body_entered(body):
-	hide() # Player disappears after being hit.
-	hit.emit()
-	# Must be deferred as we can't change physics properties on a physics callback.
-	$CollisionShape2D.set_deferred("disabled", true)
+        var boom = explode_scene.instantiate()
+        boom.position = body.position
+        get_parent().add_child(boom)
+        boom.play()
+        hide() # Player disappears after being hit.
+        hit.emit()
+        # Must be deferred as we can't change physics properties on a physics callback.
+        $CollisionShape2D.set_deferred("disabled", true)
 
 func start(pos):
 	position = pos
