@@ -1,0 +1,64 @@
+[gd_scene load_steps=9 format=3 uid="uid://bjua2x7m03tob"]
+
+[ext_resource type="Script" uid="uid://bwy5ywy6bbh36" path="res://main.gd" id="1_h2yge"]
+[ext_resource type="PackedScene" uid="uid://tenq632868lr" path="res://mob.tscn" id="2_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://cttjflhkv0vkm" path="res://player.tscn" id="3_lquwl"]
+[ext_resource type="PackedScene" uid="uid://b2s5oos6l2ago" path="res://hud.tscn" id="4_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://cnodwlnvrunji" path="res://art/1333604-most-popular-hi-res-space-wallpaper-2560x1440-photos-1047990420.jpg" id="5_lquwl"]
+[ext_resource type="AudioStream" uid="uid://dmfcbarl3omn4" path="res://Music/gameover.wav" id="6_7mycd"]
+[ext_resource type="AudioStream" uid="uid://oeciyrscxq60" path="res://Music/shooting stars.mp3" id="6_272bh"]
+
+[sub_resource type="Curve2D" id="Curve2D_7mycd"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 480, 720, 0, 0, 0, 0, 0, 720, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" type="Node"]
+script = ExtResource("1_h2yge")
+mob_scene = ExtResource("2_1bvp3")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_right = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_lquwl")
+expand_mode = 3
+
+[node name="Player" parent="." instance=ExtResource("3_lquwl")]
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(240, 450)
+
+[node name="MobPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_7mycd")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
+
+[node name="HUD" parent="." instance=ExtResource("4_1bvp3")]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_272bh")
+parameters/looping = true
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_7mycd")
+
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]
